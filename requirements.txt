@@ -1,0 +1,5 @@
+streamlit
+pydantic
+requests
+Pillow
+google-generativeai
