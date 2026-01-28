@@ -59,9 +59,9 @@ def fetch_url_content(url):
         return None
 
 def analyze_with_gemini(api_key, raw_text, url_input, images):
-    """ETL : Extraction Transform Load via Gemini 1.5 Flash"""
+    """ETL : Extraction Transform Load via Gemini"""
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-3-flash-preview')
     
     prompt = [
         """Agis comme un expert immobilier. Extrais les données au format JSON strict :
