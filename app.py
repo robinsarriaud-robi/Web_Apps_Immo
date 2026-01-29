@@ -95,9 +95,9 @@ def fetch_url_content(url):
         return None
 
 def analyze_with_gemini(api_key, raw_text, url_input, images):
-    """ETL : Extraction Transform Load via Gemini 1.5 Flash"""
+    """ETL : Extraction Transform Load via Gemini 3.0 Flash"""
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-3.0-flash-preview')
     
     prompt = [
         """Agis comme un expert immobilier. Extrais les données au format JSON strict :
@@ -131,7 +131,7 @@ def analyze_with_gemini(api_key, raw_text, url_input, images):
 def generate_draft_message(api_key, quartier):
     """Génération Template Robin"""
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-3.0-flash-preview')
     
     prompt = f"""
     Génère un message pour un vendeur immobilier. Remplace [Quartier] par "{quartier}".
@@ -232,11 +232,18 @@ with col_out:
                 st.session_state.form_data['message_draft'] = msg
                 st.rerun()
             
+            # Affichage et Edition
             st.session_state.form_data['message_draft'] = c_txt.text_area("Message", st.session_state.form_data['message_draft'], height=150)
+            
+            # --- MODIFICATION : Bloc "Code" pour copier-coller natif ---
+            if st.session_state.form_data.get('message_draft'):
+                c_txt.caption("📋 Copie rapide (cliquez sur l'icône à droite du bloc) :")
+                c_txt.code(st.session_state.form_data['message_draft'], language="text")
+            # -----------------------------------------------------------
             
             # Options finales
             cc1, cc2 = st.columns(2)
-            st.session_state.form_data['create_draft'] = cc1.toggle("Brouillon Gmail", st.session_state.form_data['create_draft'])
+            st.session_state.form_data['create_draft'] = cc1.toggle("Envoi Email Automatique", st.session_state.form_data['create_draft'])
             st.session_state.form_data['status'] = cc2.selectbox("Status", ["Non", "A contacter", "Contacté"], index=["Non", "A contacter", "Contacté"].index(st.session_state.form_data.get('status', 'A contacter')))
             st.session_state.form_data['commentaire'] = st.text_area("Note", st.session_state.form_data['commentaire'], height=68)
 
