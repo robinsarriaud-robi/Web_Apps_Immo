@@ -97,7 +97,7 @@ def fetch_url_content(url):
 def analyze_with_gemini(api_key, raw_text, url_input, images):
     """ETL : Extraction Transform Load via Gemini 3.0 Flash"""
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-3.0-flash-preview')
+    model = genai.GenerativeModel('gemini-3-flash-preview')
     
     prompt = [
         """Agis comme un expert immobilier. Extrais les données au format JSON strict :
@@ -131,7 +131,7 @@ def analyze_with_gemini(api_key, raw_text, url_input, images):
 def generate_draft_message(api_key, quartier):
     """Génération Template Robin"""
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-3.0-flash-preview')
+    model = genai.GenerativeModel('gemini-3-flash-preview')
     
     prompt = f"""
     Génère un message pour un vendeur immobilier. Remplace [Quartier] par "{quartier}".
