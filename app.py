@@ -12,6 +12,42 @@ import google.generativeai as genai
 
 st.set_page_config(page_title="Immo-Tracker AI", page_icon="🏠", layout="wide")
 
+# --- 🔐 SECURITY GATEKEEPER ---
+def check_password():
+    """Retourne True si le mot de passe est correct, sinon stop l'app."""
+    
+    # 1. Vérification si le mot de passe est défini dans les secrets
+    if "APP_PASSWORD" not in st.secrets:
+        st.warning("⚠️ La configuration 'APP_PASSWORD' est manquante dans les secrets.")
+        st.stop()
+
+    # 2. Fonction de callback pour valider l'input
+    def password_entered():
+        if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # On ne garde pas le mdp en clair
+        else:
+            st.session_state["password_correct"] = False
+
+    # 3. Logique d'affichage
+    if "password_correct" not in st.session_state:
+        # Premier chargement : afficher l'input
+        st.text_input("🔒 Mot de passe requis", type="password", on_change=password_entered, key="password")
+        return False
+    elif not st.session_state["password_correct"]:
+        # Mot de passe faux : ré-afficher input + erreur
+        st.text_input("🔒 Mot de passe requis", type="password", on_change=password_entered, key="password")
+        st.error("⛔ Mot de passe incorrect")
+        return False
+    else:
+        # Mot de passe correct
+        return True
+
+if not check_password():
+    st.stop()  # ARRÊT TOTAL DE L'EXECUTION ICI SI PAS AUTHENTIFIÉ
+
+# --- FIN SECURITY GATEKEEPER (Le reste du code s'exécute seulement si auth OK) ---
+
 # Modèle de données strict (Pydantic)
 class ImmoData(BaseModel):
     date: str = Field(default_factory=lambda: datetime.now().strftime("%Y-%m-%d"))
@@ -59,9 +95,9 @@ def fetch_url_content(url):
         return None
 
 def analyze_with_gemini(api_key, raw_text, url_input, images):
-    """ETL : Extraction Transform Load via Gemini"""
+    """ETL : Extraction Transform Load via Gemini 1.5 Flash"""
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-3-flash-preview')
+    model = genai.GenerativeModel('gemini-1.5-flash')
     
     prompt = [
         """Agis comme un expert immobilier. Extrais les données au format JSON strict :
