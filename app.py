@@ -222,7 +222,8 @@ with col_out:
 
             st.session_state.form_data['quartier'] = c2.text_input("Quartier", st.session_state.form_data['quartier'])
             st.session_state.form_data['surface'] = c2.number_input("Surface (m²)", value=float(st.session_state.form_data['surface']))
-            st.session_state.form_data['DPE'] = c2.text_input("DPE", value=st.session_state.form_data['DPE'])
+            # On utilise "or" pour coalescer None vers ""
+            st.session_state.form_data['DPE'] = c2.text_input("DPE", value=st.session_state.form_data['DPE'] or "")
             st.session_state.form_data['type_vendeur'] = c2.selectbox("Vendeur", ["Agence", "Particulier", "Autre"], index=["Agence", "Particulier", "Autre"].index(st.session_state.form_data.get('type_vendeur', 'Agence')))
             st.session_state.form_data['telephone'] = c2.text_input("Téléphone", st.session_state.form_data['telephone'])
 
